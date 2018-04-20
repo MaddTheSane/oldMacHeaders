@@ -17,9 +17,13 @@
 #include <ApplicationServices/ApplicationServices.h>
 #include <Carbon/Carbon.h>
 
+#ifndef __LP64__
+
 #ifdef QD_HEADERS_ARE_PRIVATE
 
 #pragma pack (push, 2)
+
+#define geneva 3
 
 typedef CALLBACK_API( void , DragGrayRgnProcPtr )(void);
 typedef STACK_UPP_TYPE(DragGrayRgnProcPtr)                      DragGrayRgnUPP;
@@ -30,6 +34,10 @@ CF_ENUM(StyledLineBreakCode) {
 	smBreakChar                   = 1,
 	smBreakOverflow               = 2
 };
+
+#if 0
+}
+#endif
 
 
 enum {
@@ -145,7 +153,7 @@ enum {
 	gdDevType	= 0		/*0 = monochrome 1 = color*/
 };
 
-enum {
+CF_ENUM(short) {
 	pmCourteous                   = 0,    /*Record use of color on each device touched.*/
 	pmDithered                    = 0x0001,
 	pmTolerant                    = 0x0002, /*render ciRGB if ciTolerance is exceeded by best match.*/
@@ -159,11 +167,14 @@ enum {
 	pmInhibitC4                   = 0x0800,
 	pmInhibitG8                   = 0x1000,
 	pmInhibitC8                   = 0x2000, /* NSetPalette Update Constants */
-	pmNoUpdates                   = 0x8000, /*no updates*/
-	pmBkUpdates                   = 0xA000, /*background updates only*/
-	pmFgUpdates                   = 0xC000, /*foreground updates only*/
-	pmAllUpdates                  = 0xE000 /*all updates*/
+	pmNoUpdates                   = (short)0x8000, /*no updates*/
+	pmBkUpdates                   = (short)0xA000, /*background updates only*/
+	pmFgUpdates                   = (short)0xC000, /*foreground updates only*/
+	pmAllUpdates                  = (short)0xE000 /*all updates*/
 };
+#if 0
+}
+#endif
 
 enum {
 	interlacedDevice	= 2,
@@ -209,6 +220,8 @@ typedef struct Cursor {
 	Bits16	mask;
 	Point	hotSpot;
 } Cursor, *CursPtr, **CursHandle;
+
+typedef const Pattern *ConstPatternParam;
 
 typedef struct PenState {
 	Point	pnLoc;
@@ -277,6 +290,60 @@ enum {
 	ditherPix				= 1L << ditherPixBit,
 	gwFlagErr				= 1L << gwFlagErrBit
 };
+
+typedef MacPolygon                      Polygon;
+typedef MacPolygon *                    PolyPtr;
+typedef PolyPtr *                       PolyHandle;
+typedef CALLBACK_API( void , QDTextProcPtr )(short byteCount, const void *textBuf, Point numer, Point denom);
+typedef CALLBACK_API( void , QDLineProcPtr )(Point newPt);
+typedef CALLBACK_API( void , QDRectProcPtr )(GrafVerb verb, const Rect *r);
+typedef CALLBACK_API( void , QDRRectProcPtr )(GrafVerb verb, const Rect *r, short ovalWidth, short ovalHeight);
+typedef CALLBACK_API( void , QDOvalProcPtr )(GrafVerb verb, const Rect *r);
+typedef CALLBACK_API( void , QDArcProcPtr )(GrafVerb verb, const Rect *r, short startAngle, short arcAngle);
+typedef CALLBACK_API( void , QDPolyProcPtr )(GrafVerb verb, PolyHandle poly);
+typedef CALLBACK_API( void , QDRgnProcPtr )(GrafVerb verb, RgnHandle rgn);
+typedef CALLBACK_API( void , QDBitsProcPtr )(const BitMap *srcBits, const Rect *srcRect, const Rect *dstRect, short mode, RgnHandle maskRgn);
+typedef CALLBACK_API( void , QDCommentProcPtr )(short kind, short dataSize, Handle dataHandle);
+typedef CALLBACK_API( short , QDTxMeasProcPtr )(short byteCount, const void *textAddr, Point *numer, Point *denom, FontInfo *info);
+typedef CALLBACK_API( void , QDGetPicProcPtr )(void *dataPtr, short byteCount);
+typedef CALLBACK_API( void , QDPutPicProcPtr )(const void *dataPtr, short byteCount);
+typedef CALLBACK_API( void , QDOpcodeProcPtr )(const Rect *fromRect, const Rect *toRect, UInt16 opcode, SInt16 version);
+/* The following is unused on Mac OS X - ignore it! */
+typedef CALLBACK_API_C( OSStatus , QDStdGlyphsProcPtr )(void *dataStream, ByteCount size);
+typedef CALLBACK_API( void , QDJShieldCursorProcPtr )(short left, short top, short right, short bottom);
+typedef STACK_UPP_TYPE(QDTextProcPtr)                           QDTextUPP;
+typedef STACK_UPP_TYPE(QDLineProcPtr)                           QDLineUPP;
+typedef STACK_UPP_TYPE(QDRectProcPtr)                           QDRectUPP;
+typedef STACK_UPP_TYPE(QDRRectProcPtr)                          QDRRectUPP;
+typedef STACK_UPP_TYPE(QDOvalProcPtr)                           QDOvalUPP;
+typedef STACK_UPP_TYPE(QDArcProcPtr)                            QDArcUPP;
+typedef STACK_UPP_TYPE(QDPolyProcPtr)                           QDPolyUPP;
+typedef STACK_UPP_TYPE(QDRgnProcPtr)                            QDRgnUPP;
+typedef STACK_UPP_TYPE(QDBitsProcPtr)                           QDBitsUPP;
+typedef STACK_UPP_TYPE(QDCommentProcPtr)                        QDCommentUPP;
+typedef STACK_UPP_TYPE(QDTxMeasProcPtr)                         QDTxMeasUPP;
+typedef STACK_UPP_TYPE(QDGetPicProcPtr)                         QDGetPicUPP;
+typedef STACK_UPP_TYPE(QDPutPicProcPtr)                         QDPutPicUPP;
+typedef STACK_UPP_TYPE(QDOpcodeProcPtr)                         QDOpcodeUPP;
+typedef STACK_UPP_TYPE(QDStdGlyphsProcPtr)                      QDStdGlyphsUPP;
+typedef STACK_UPP_TYPE(QDJShieldCursorProcPtr)                  QDJShieldCursorUPP;
+struct QDProcs {
+	QDTextUPP           textProc;
+	QDLineUPP           lineProc;
+	QDRectUPP           rectProc;
+	QDRRectUPP          rRectProc;
+	QDOvalUPP           ovalProc;
+	QDArcUPP            arcProc;
+	QDPolyUPP           polyProc;
+	QDRgnUPP            rgnProc;
+	QDBitsUPP           bitsProc;
+	QDCommentUPP        commentProc;
+	QDTxMeasUPP         txMeasProc;
+	QDGetPicUPP         getPicProc;
+	QDPutPicUPP         putPicProc;
+};
+typedef struct QDProcs                  QDProcs;
+typedef QDProcs *                       QDProcsPtr;
 
 struct CCrsr {
 	short               crsrType;               /*type of cursor*/
@@ -377,6 +444,10 @@ CF_ENUM(GrafVerb) {
 	planar                        = 2
 };
 
+#if 0
+}
+#endif
+
 typedef short                           TruncCode;
 CF_ENUM(TruncCode) {
 	/* Constants for truncWhere argument in TruncString and TruncText */
@@ -386,7 +457,11 @@ CF_ENUM(TruncCode) {
 	smTruncMiddle                 = 0x4000 /* Truncate in middle - obsolete */
 };
 
-struct ITab {
+#if 0
+}
+#endif
+
+	struct ITab {
 	SInt32              iTabSeed;               /*copy of CTSeed from source CTable*/
 	short               iTabRes;                /*bits/channel resolution of iTable*/
 	Byte                iTTable[1];             /*byte colortable index values*/
@@ -416,6 +491,24 @@ struct FMOutput {
 typedef struct FMOutput                 FMOutput;
 typedef FMOutput *                      FMOutputPtr;
 typedef FMOutputPtr                     FMOutPtr;
+
+typedef CALLBACK_API( void , DeviceLoopDrawingProcPtr )(short depth, short deviceFlags, GDHandle targetDevice, SRefCon userData);
+typedef STACK_UPP_TYPE(DeviceLoopDrawingProcPtr)                DeviceLoopDrawingUPP;
+enum {
+	singleDevicesBit              = 0,
+	dontMatchSeedsBit             = 1,
+	allDevicesBit                 = 2
+};
+
+typedef CF_OPTIONS(unsigned long,DeviceLoopFlags) {
+	singleDevices                 = 1 << singleDevicesBit,
+	dontMatchSeeds                = 1 << dontMatchSeedsBit,
+	allDevices                    = 1 << allDevicesBit
+};
+#if 0
+}
+#endif
+
 
 #pragma mark Carbon printing
 typedef struct OpaquePMPrintContext* PMPrintContext;
@@ -465,12 +558,12 @@ extern void LocalToGlobal(Point *);
 extern Rect *GetPortBounds(CGrafPtr, Rect *);
 extern void pStrcpy(register unsigned char *, register const unsigned char *);
 extern Boolean MacPtInRect(Point, const Rect *);
-extern GDHandle GetMainDevice();
-extern RgnHandle NewRgn();
-extern void OpenRgn();
+extern GDHandle GetMainDevice(void);
+extern RgnHandle NewRgn(void);
+extern void OpenRgn(void);
 extern void CloseRgn(RgnHandle);
 extern PixMapHandle GetPortPixMap(CGrafPtr);
-extern GDHandle GetGDevice();
+extern GDHandle GetGDevice(void);
 extern void MoveTo(short, short);
 extern void MacLineTo(short, short);
 extern void EraseRect(const Rect *);
@@ -490,7 +583,7 @@ extern RgnHandle GetPortVisibleRegion(CGrafPtr, RgnHandle);
 extern void DisposeRgn(RgnHandle);
 extern void GlobalToLocal(Point *);
 extern void LMSetHiliteMode(UInt8);
-extern UInt8 LMGetHiliteMode();
+extern UInt8 LMGetHiliteMode(void);
 extern void GetClip(RgnHandle);
 extern void SetClip(RgnHandle);
 extern void ClipRect(const Rect *);
@@ -502,7 +595,7 @@ extern void MacFrameRect(const Rect *);
 extern void RectRgn(RgnHandle, const Rect *);
 extern void DiffRgn(RgnHandle, RgnHandle, RgnHandle);
 extern void MacUnionRgn(RgnHandle, RgnHandle, RgnHandle);
-extern void MacShowCursor();
+extern void MacShowCursor(void);
 extern void DrawPicture(PicHandle, const Rect *);
 extern Boolean SectRect(const Rect *, const Rect *, Rect *);
 extern void PenSize(short, short);
@@ -516,17 +609,17 @@ extern void MacCopyRgn(RgnHandle, RgnHandle);
 extern void SetPt(Point *, short, short);
 extern Rect *GetRegionBounds(RgnHandle, Rect *);
 extern void InsetRgn(RgnHandle, short, short);
-extern void DiffRgn(RgnHandle, RgnHandle, RgnHandle);
 extern void MacInsetRect(Rect *, short, short);
 extern void SetCPixel(short, short, const RGBColor *);
 extern Boolean MacEqualRect(const Rect *, const Rect *);
 extern void MacOffsetRgn(RgnHandle, short, short);
+extern void MacFillRgn(RgnHandle, const Pattern *);
 extern void EraseRgn(RgnHandle);
 extern CTabHandle GetCTable(short);
 extern void GetBackColor(RGBColor *);
 extern long Color2Index(const RGBColor *);
 extern void FrameRoundRect(const Rect *, short, short);
-extern short Random();
+extern short Random(void);
 extern void PenMode(short);
 extern Boolean IsRegionRectangular(RgnHandle);
 extern void GetPenState(PenState *);
@@ -534,7 +627,7 @@ extern void SetPenState(const PenState *);
 extern void PenPixPat(PixPatHandle);
 extern PixPatHandle GetPixPat(short);
 extern Boolean EmptyRect(const Rect *);
-extern PixMapHandle NewPixMap();
+extern PixMapHandle NewPixMap(void);
 extern void DisposePixMap(PixMapHandle);
 extern Boolean RectInRgn(const Rect *, RgnHandle);
 extern Boolean EmptyRgn(RgnHandle);
@@ -542,20 +635,24 @@ extern void Pt2Rect(Point, Point, Rect*);
 extern Rect *GetPixBounds(PixMapHandle, Rect*);
 extern void SetOrigin(short, short);
 extern void MacInvertRgn(RgnHandle);
-extern void PenNormal();
+extern void PenNormal(void);
 extern const BitMap *GetPortBitMapForCopyBits(CGrafPtr);
 extern void GetForeColor(RGBColor *);
 extern void Index2Color(long, RGBColor *);
 extern void CopyMask(const BitMap *, const BitMap *, const BitMap *, const Rect *, const Rect *, const Rect *);
-extern void ObscureCursor();
-extern CGrafPtr GetQDGlobalsThePort();
-extern OSErr LockPortBits(GrafPtr);
-extern OSErr UnlockPortBits(GrafPtr);
-extern OSStatus QDAddRectToDirtyRegion(CGrafPtr, const Rect *);
-extern Boolean QDSwapPort(CGrafPtr, CGrafPtr *);
-extern void DisposePixPat(PixPatHandle);
-extern PixPatHandle NewPixPat(void);
-extern void MakeRGBPat(PixPatHandle, const RGBColor *);
+extern void ObscureCursor(void);
+extern CGrafPtr GetQDGlobalsThePort(void);
+extern short HasDepth(GDHandle, short, short, short);
+extern void SetEntryColor(PaletteHandle, short, const RGBColor *);
+extern void GetIndPattern(Pattern *, short, short);
+extern RgnHandle GetPortClipRegion(CGrafPtr, RgnHandle);
+extern void Move(short, short);
+extern OSStatus PMSessionBeginDocument(PMPrintSession, PMPrintSettings, PMPageFormat);
+extern OSStatus PMSessionBeginDocumentNoDialog(PMPrintSession, PMPrintSettings, PMPageFormat);
+
+extern OSStatus PMSessionGetGraphicsContext(PMPrintSession, CFStringRef, void **);
+extern Boolean RealFont(short, short);
+extern void PortChanged(GrafPtr);
 
 #pragma mark Text funcs
 extern void TextFace(StyleParameter face);
@@ -617,6 +714,9 @@ extern void SetOutlinePreferred(Boolean);
 extern FMFontFamily FMGetFontFamilyFromName(ConstStr255Param);
 extern void SetFractEnable(Boolean fractEnable);
 extern short GetAppFont(void);
+
+extern QDGetPicUPP NewQDGetPicUPP(QDGetPicProcPtr);
+
 
 #pragma mark ATS
 extern OSStatus ATSUFindFontFromName(
@@ -780,11 +880,9 @@ extern OSStatus PMPrintDialog(
 #pragma mark CGContext
 extern OSStatus SyncCGContextOriginWithPort(CGContextRef, CGrafPtr);
 extern OSStatus CreateCGContextForPort(CGrafPtr, CGContextRef *);
-extern CFIndex CGDisplayBitsPerPixel(CGDirectDisplayID);
-extern OSStatus QDBeginCGContext(CGrafPtr inPort, CGContextRef *outContext);
-extern OSStatus QDEndCGContext(CGrafPtr inPort, CGContextRef *inoutContext);
 
 //misc.
+extern void NoPurgePixels(PixMapHandle);
 extern GDHandle DMGetFirstScreenDevice(Boolean);
 extern GDHandle DMGetNextScreenDevice(GDHandle, Boolean);
 extern OSErr DMGetDisplayIDByGDevice(GDHandle, DisplayIDType *, Boolean);
@@ -845,6 +943,8 @@ extern void NSetPalette(
 			WindowRef       dstWindow,
 			PaletteHandle   srcPalette,
 			short           nCUpdates);
+extern void ActivatePalette(WindowRef);
+extern void GetEntryColor(PaletteHandle, short, RGBColor*);
 extern Ptr GetPixBaseAddr(PixMapHandle);
 extern void KillPicture(PicHandle);
 extern CGrafPtr CreateNewPort(void);
@@ -907,10 +1007,30 @@ extern void PortSize(short, short);
 extern short GetSysFont(void);
 extern FMOutPtr FMSwapFont(const FMInput * inRec);
 
+
+extern Boolean GetGray(GDHandle, const RGBColor*, RGBColor*);
+extern DeviceLoopDrawingUPP NewDeviceLoopDrawingUPP(DeviceLoopDrawingProcPtr);
+extern void DisposeDeviceLoopDrawingUPP(DeviceLoopDrawingUPP);
+extern void DeviceLoop(RgnHandle, DeviceLoopDrawingUPP, long, DeviceLoopFlags);
+extern void FillPoly(PolyHandle, const Pattern*);
+extern SInt32 GetPortPenMode(CGrafPtr);
+extern void InvalRect(const Rect*);
+
+extern PolyHandle OpenPoly(void);
+extern void ClosePoly(void);
+extern void KillPoly(PolyHandle poly);
+extern void OffsetPoly(PolyHandle, short, short);
+extern void FramePoly(PolyHandle poly);
+extern void PaintPoly(PolyHandle poly);
+extern void ErasePoly(PolyHandle poly);
+extern void InvertPoly(PolyHandle poly);
+extern void FillPoly(PolyHandle, const Pattern*);
 __END_DECLS
+
+#define kPMGraphicsContextQuickdraw     CFSTR("com.apple.graphicscontext.quickdraw")
 
 #pragma pack (pop)
 
 #endif
-
+#endif
 #endif
