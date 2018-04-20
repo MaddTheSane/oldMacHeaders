@@ -461,7 +461,7 @@ CF_ENUM(TruncCode) {
 }
 #endif
 
-	struct ITab {
+struct ITab {
 	SInt32              iTabSeed;               /*copy of CTSeed from source CTable*/
 	short               iTabRes;                /*bits/channel resolution of iTable*/
 	Byte                iTTable[1];             /*byte colortable index values*/
@@ -609,6 +609,7 @@ extern void MacCopyRgn(RgnHandle, RgnHandle);
 extern void SetPt(Point *, short, short);
 extern Rect *GetRegionBounds(RgnHandle, Rect *);
 extern void InsetRgn(RgnHandle, short, short);
+extern void DiffRgn(RgnHandle, RgnHandle, RgnHandle);
 extern void MacInsetRect(Rect *, short, short);
 extern void SetCPixel(short, short, const RGBColor *);
 extern Boolean MacEqualRect(const Rect *, const Rect *);
@@ -647,10 +648,13 @@ extern void SetEntryColor(PaletteHandle, short, const RGBColor *);
 extern void GetIndPattern(Pattern *, short, short);
 extern RgnHandle GetPortClipRegion(CGrafPtr, RgnHandle);
 extern void Move(short, short);
-extern OSStatus PMSessionBeginDocument(PMPrintSession, PMPrintSettings, PMPageFormat);
-extern OSStatus PMSessionBeginDocumentNoDialog(PMPrintSession, PMPrintSettings, PMPageFormat);
-
-extern OSStatus PMSessionGetGraphicsContext(PMPrintSession, CFStringRef, void **);
+extern OSErr LockPortBits(GrafPtr);
+extern OSErr UnlockPortBits(GrafPtr);
+extern OSStatus QDAddRectToDirtyRegion(CGrafPtr, const Rect *);
+extern Boolean QDSwapPort(CGrafPtr, CGrafPtr *);
+extern void DisposePixPat(PixPatHandle);
+extern PixPatHandle NewPixPat(void);
+extern void MakeRGBPat(PixPatHandle, const RGBColor *);
 extern Boolean RealFont(short, short);
 extern void PortChanged(GrafPtr);
 
@@ -874,12 +878,19 @@ extern OSStatus PMPrintDialog(
 			  PMPrintSettings   printSettings,
 			  PMPageFormat      constPageFormat,
 			  Boolean *         accepted);
+extern OSStatus PMSessionBeginDocument(PMPrintSession, PMPrintSettings, PMPageFormat);
+extern OSStatus PMSessionBeginDocumentNoDialog(PMPrintSession, PMPrintSettings, PMPageFormat);
+
+extern OSStatus PMSessionGetGraphicsContext(PMPrintSession, CFStringRef, void **);
 
 #pragma mark -
 
 #pragma mark CGContext
 extern OSStatus SyncCGContextOriginWithPort(CGContextRef, CGrafPtr);
 extern OSStatus CreateCGContextForPort(CGrafPtr, CGContextRef *);
+extern CFIndex CGDisplayBitsPerPixel(CGDirectDisplayID);
+extern OSStatus QDBeginCGContext(CGrafPtr inPort, CGContextRef *outContext);
+extern OSStatus QDEndCGContext(CGrafPtr inPort, CGContextRef *inoutContext);
 
 //misc.
 extern void NoPurgePixels(PixMapHandle);
