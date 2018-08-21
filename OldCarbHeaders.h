@@ -20,6 +20,7 @@
 #ifndef __LP64__
 
 #ifdef QD_HEADERS_ARE_PRIVATE
+#define __QUICKDRAWTEXT__
 
 #pragma pack (push, 2)
 
@@ -509,6 +510,7 @@ typedef CF_OPTIONS(unsigned long,DeviceLoopFlags) {
 }
 #endif
 
+typedef short JustStyleCode;
 
 #pragma mark Carbon printing
 typedef struct OpaquePMPrintContext* PMPrintContext;
@@ -657,6 +659,7 @@ extern PixPatHandle NewPixPat(void);
 extern void MakeRGBPat(PixPatHandle, const RGBColor *);
 extern Boolean RealFont(short, short);
 extern void PortChanged(GrafPtr);
+extern Point *QDGlobalToLocalPoint(CGrafPtr, Point *);
 
 #pragma mark Text funcs
 extern void TextFace(StyleParameter face);
