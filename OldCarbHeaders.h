@@ -449,6 +449,8 @@ CF_ENUM(GrafVerb) {
 }
 #endif
 
+typedef WindowPtr                       CWindowPtr;
+
 typedef short                           TruncCode;
 CF_ENUM(TruncCode) {
 	/* Constants for truncWhere argument in TruncString and TruncText */
