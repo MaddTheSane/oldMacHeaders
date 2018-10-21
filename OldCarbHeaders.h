@@ -345,6 +345,7 @@ struct QDProcs {
 };
 typedef struct QDProcs                  QDProcs;
 typedef QDProcs *                       QDProcsPtr;
+typedef struct QDPict * QDPictRef;
 
 struct CCrsr {
 	short               crsrType;               /*type of cursor*/
@@ -1041,6 +1042,16 @@ extern void PaintPoly(PolyHandle poly);
 extern void ErasePoly(PolyHandle poly);
 extern void InvertPoly(PolyHandle poly);
 extern void FillPoly(PolyHandle, const Pattern*);
+
+// QDPictToCGContext.h
+extern QDPictRef QDPictCreateWithProvider(CGDataProviderRef);
+extern QDPictRef QDPictCreateWithURL(CFURLRef);
+extern CGRect QDPictGetBounds(QDPictRef);
+extern OSStatus QDPictDrawToCGContext(CGContextRef, CGRect, QDPictRef);
+extern void QDPictGetResolution(QDPictRef, float *, float *);
+extern void QDPictRelease(QDPictRef);
+extern QDPictRef QDPictRetain(QDPictRef);
+
 __END_DECLS
 
 #define kPMGraphicsContextQuickdraw     CFSTR("com.apple.graphicscontext.quickdraw")
