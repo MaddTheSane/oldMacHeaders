@@ -24,7 +24,7 @@
 
 #pragma pack (push, 2)
 
-#define geneva 3
+#define geneva kFontIDGeneva
 
 typedef CALLBACK_API( void , DragGrayRgnProcPtr )(void);
 typedef STACK_UPP_TYPE(DragGrayRgnProcPtr)                      DragGrayRgnUPP;
@@ -515,6 +515,14 @@ typedef CF_OPTIONS(unsigned long,DeviceLoopFlags) {
 
 typedef short JustStyleCode;
 
+struct MatchRec {
+  unsigned short      red;
+  unsigned short      green;
+  unsigned short      blue;
+  long                matchData;
+};
+typedef struct MatchRec                 MatchRec;
+
 #pragma mark Carbon printing
 typedef struct OpaquePMPrintContext* PMPrintContext;
 
@@ -548,6 +556,7 @@ typedef struct OpaquePMPrintContext* PMPrintContext;
 #endif
 
 __BEGIN_DECLS
+extern void SeedCFill(const BitMap *, const BitMap *, const Rect *, const Rect *, short, short, ColorSearchUPP, long);
 extern void GetPort(GrafPtr *);
 extern short GetPortTextFont(CGrafPtr);
 extern short GetPortTextSize(CGrafPtr);
@@ -1052,6 +1061,19 @@ extern void QDPictGetResolution(QDPictRef, float *, float *);
 extern void QDPictRelease(QDPictRef);
 extern QDPictRef QDPictRetain(QDPictRef);
 
+// QDOffscreen
+extern void NoPurgePixels(PixMapHandle);
+extern GWorldFlags GetPixelsState(PixMapHandle);
+extern void SetPixelsState(PixMapHandle, GWorldFlags);
+extern QDErr NewScreenBuffer(const Rect *, Boolean, GDHandle *, PixMapHandle *);
+extern void AllowPurgePixels(PixMapHandle);
+
+// Color Search
+extern ColorSearchUPP NewColorSearchUPP(ColorSearchProcPtr);
+extern void AddSearch(ColorSearchUPP);
+extern void DelSearch(ColorSearchUPP);
+extern void AddComp(ColorComplementUPP);
+extern void DelComp(ColorComplementUPP);
 __END_DECLS
 
 #define kPMGraphicsContextQuickdraw     CFSTR("com.apple.graphicscontext.quickdraw")
